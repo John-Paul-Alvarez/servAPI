@@ -22,9 +22,10 @@ let ExtractJwt = passportJWT.ExtractJwt;
 let JwtStrategy = passportJWT.Strategy;
 
 // Configure its options
-let jwtOptions = {};
-jwtOptions.jwtFromRequest = ExtractJwt.fromAuthHeaderWithScheme('jwt');
-
+let jwtOptions = {
+    jwtFromRequest: ExtractJwt.fromAuthHeaderWithScheme('jwt'),
+    secretOrKey: process.env.JWT_SECRET, // Retrieve secret key from environment variable
+};
 
 // IMPORTANT - this secret should be a long, unguessable string
 // (ideally stored in a "protected storage" area on the web server).
@@ -43,8 +44,6 @@ let strategy = new JwtStrategy(jwtOptions, function (jwt_payload, next) {
         next(null, {
             _id: jwt_payload._id,
             userName: jwt_payload.userName,
-            fullName: jwt_payload.fullName,
-            role: jwt_payload.role,
         });
     } else {
         next(null, false);
