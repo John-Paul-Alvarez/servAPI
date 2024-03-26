@@ -12,11 +12,7 @@ const userService = require("./user-service.js");
 
 const HTTP_PORT = process.env.PORT || 8080;
 
-// tell passport to use our "strategy"
-passport.use(strategy);
 
-// add passport as application-level middleware
-app.use(passport.initialize());
 
 app.use(express.json());
 app.use(cors());
@@ -26,10 +22,9 @@ let ExtractJwt = passportJWT.ExtractJwt;
 let JwtStrategy = passportJWT.Strategy;
 
 // Configure its options
-let jwtOptions = {
-    jwtFromRequest: ExtractJwt.fromAuthHeaderWithScheme('jwt'),
-    secretOrKey: '&0y7$noP#5rt99&GB%Pz7j2b1vkzaB0RKs%^N^0zOP89NT04mPuaM!&G8cbNZOtH',
-};
+let jwtOptions = {};
+jwtOptions.jwtFromRequest = ExtractJwt.fromAuthHeaderWithScheme('jwt');
+
 
 // IMPORTANT - this secret should be a long, unguessable string
 // (ideally stored in a "protected storage" area on the web server).
@@ -56,6 +51,11 @@ let strategy = new JwtStrategy(jwtOptions, function (jwt_payload, next) {
     }
 });
 
+// tell passport to use our "strategy"
+passport.use(strategy);
+
+// add passport as application-level middleware
+app.use(passport.initialize());
 
 app.post("/api/user/register", (req, res) => {
     userService.registerUser(req.body)
